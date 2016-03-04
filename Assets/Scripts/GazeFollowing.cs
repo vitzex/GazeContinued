@@ -89,14 +89,30 @@ public class GazeFollowing : MonoBehaviour
     {
         Vector3 desired = Gaze.transform.position - gameObject.transform.position;
 
-        if (headRot==1)
-        //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
-        gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(desired), 180);
-        //lookrotation - if coming downstream => looking the other way
-        //FIX -> via states
-       else if (headRot== -1)
-            //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, gameObject.transform.parent.transform.forward, stepRadians, 0);
-            gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, defaultRot, 180);
+        if (gameObject.GetComponentInParent<RandomCharacters>()._prevState == RandomCharacters.State.upwards)
+        {
+            if (headRot == 1)
+                //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
+                gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(desired), 180);
+            //lookrotation - if coming downstream => looking the other way
+            //FIX -> via states
+            else if (headRot == -1)
+                //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, gameObject.transform.parent.transform.forward, stepRadians, 0);
+                gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, defaultRot, 180);
+        }
+
+       else if (gameObject.GetComponentInParent<RandomCharacters>()._prevState == RandomCharacters.State.downwards)
+        {
+            if (headRot == 1)
+                //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
+                gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(-desired), 180);
+            //lookrotation - if coming downstream => looking the other way
+            //FIX -> via states
+            else if (headRot == -1)
+                //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, gameObject.transform.parent.transform.forward, stepRadians, 0);
+                gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, defaultRot, 180);
+        }
+
     }
 
     IEnumerator States(GameObject Agent)
@@ -257,6 +273,10 @@ public class GazeFollowing : MonoBehaviour
     void lookFwd(GameObject Agent)
     {
         headRot = -1;
+        foreach (Transform child in Agent.transform)
+        {
+            child.gameObject.SetActive(false);
+        }
         //gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, gameObject.transform.parent.transform.rotation, 180);
         //moving gaze forward
     }
@@ -268,7 +288,7 @@ public class GazeFollowing : MonoBehaviour
         //  if (Vector3.Angle(Agent.transform.forward, desired) < 80) // check if within visual field
         //OBSOLETE - now visual field is being calculated via FSM
         //   {
-        if (Vector3.Angle(Agent.transform.parent.transform.forward, desired) <= 135)
+        if (Vector3.Angle(Agent.transform.parent.transform.forward, desired) <= 120)
         //physically harder to look back over 135 degrees - so if going over, look away
         {
             headRot = 1;
