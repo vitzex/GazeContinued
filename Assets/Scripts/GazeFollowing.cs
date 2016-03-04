@@ -4,7 +4,7 @@ using System.Collections;
 public class GazeFollowing : MonoBehaviour
 {
 
-    public bool overwrite;
+    public bool overwrite, gazeFol=false;
     GameObject Gaze, Clone, threshold, target;
    // GameObject Agent;
     float angle, maintain = -7;
@@ -89,28 +89,48 @@ public class GazeFollowing : MonoBehaviour
     {
         Vector3 desired = Gaze.transform.position - gameObject.transform.position;
 
-        if (gameObject.GetComponentInParent<RandomCharacters>()._prevState == RandomCharacters.State.upwards)
+        if (gazeFol)
         {
-            if (headRot == 1)
-                //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
-                gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(desired), 180);
-            //lookrotation - if coming downstream => looking the other way
-            //FIX -> via states
-            else if (headRot == -1)
+            if (gameObject.GetComponentInParent<RandomCharacters>()._prevState == RandomCharacters.State.upwards)
+            {
+                if (headRot == 1)
+                    //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
+                    gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(desired), 180);
+                //lookrotation - if coming downstream => looking the other way
+                //FIX -> via states
+                else if (headRot == -1)
                 //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, gameObject.transform.parent.transform.forward, stepRadians, 0);
-                gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, defaultRot, 180);
-        }
+                {
+                    gameObject.transform.localRotation = gameObject.transform.parent.transform.localRotation;
+                    foreach (Transform child in gameObject.transform)
+                    {
+                        child.gameObject.SetActive(false);
+                    }
+                    //
+                    Quaternion.RotateTowards(gameObject.transform.localRotation, gameObject.transform.parent.transform.localRotation, 180);
+                }
 
-       else if (gameObject.GetComponentInParent<RandomCharacters>()._prevState == RandomCharacters.State.downwards)
-        {
-            if (headRot == 1)
-                //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
-                gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(-desired), 180);
-            //lookrotation - if coming downstream => looking the other way
-            //FIX -> via states
-            else if (headRot == -1)
-                //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, gameObject.transform.parent.transform.forward, stepRadians, 0);
-                gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, defaultRot, 180);
+                }
+
+
+            else if (gameObject.GetComponentInParent<RandomCharacters>()._prevState == RandomCharacters.State.downwards)
+            {
+                if (headRot == 1)
+                    //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
+                    gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(-desired), 180);
+                //lookrotation - if coming downstream => looking the other way
+                //FIX -> via states
+                else if (headRot == -1)
+                    //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, gameObject.transform.parent.transform.forward, stepRadians, 0);
+       
+                         gameObject.transform.localRotation = gameObject.transform.parent.transform.localRotation;
+                foreach (Transform child in gameObject.transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
+                //Quaternion.RotateTowards(gameObject.transform.localRotation, gameObject.transform.parent.transform.localRotation, 180);
+            }
+
         }
 
     }
@@ -129,7 +149,9 @@ public class GazeFollowing : MonoBehaviour
                     if (Agent.tag != "Agent")
                     {
                         Agent.tag = "Agent";
-                    } 
+                    }
+
+                    headRot = 0; gazeFol = false;
 
                     if ((_prevState == State.Follow) || (_prevState == State.Decide))  //making sure it's turned off (and only checking once)
                         foreach (Transform child in Agent.transform)
@@ -147,6 +169,8 @@ public class GazeFollowing : MonoBehaviour
                 case State.Stroll:
                     if (!Agent.transform.parent.transform.parent.transform.parent.transform.parent.GetComponentInChildren<Renderer>().isVisible) //not visible agents
                         SetState(State.Invisible);
+
+                    headRot = 0; gazeFol = false;
 
                     lookFwd(Agent); //normal behaviour
                     if (Agent.tag != "Agent")
@@ -169,6 +193,8 @@ public class GazeFollowing : MonoBehaviour
 
                     if (!Agent.transform.parent.transform.parent.transform.parent.transform.parent.GetComponentInChildren<Renderer>().isVisible) //not visible agents
                         SetState(State.Invisible);
+
+                    headRot = 0; gazeFol = false;
 
                     foreach (Transform child in Agent.transform) //show when "scanning"
                     {
@@ -194,7 +220,9 @@ public class GazeFollowing : MonoBehaviour
                     if (Agent.tag != "Gazing") Agent.tag = "Gazing";
                     {
                         gazeFollow(Agent); //gazing behaviour
-                        
+
+                        gazeFol = true;
+
                         foreach (Transform child in Agent.transform)
                         {
                             child.gameObject.SetActive(true);
@@ -208,6 +236,8 @@ public class GazeFollowing : MonoBehaviour
                 case State.Immune:
                     if (!Agent.transform.parent.transform.parent.transform.parent.transform.parent.GetComponentInChildren<Renderer>().isVisible) //not visible agents
                         SetState(State.Invisible);
+
+                    headRot = 0; gazeFol = false;
 
                     lookFwd(Agent); //normal behaviour
                     if (Agent.tag != "Agent")
@@ -272,7 +302,7 @@ public class GazeFollowing : MonoBehaviour
 
     void lookFwd(GameObject Agent)
     {
-        headRot = -1;
+    //    headRot = -1;
         foreach (Transform child in Agent.transform)
         {
             child.gameObject.SetActive(false);
@@ -288,7 +318,7 @@ public class GazeFollowing : MonoBehaviour
         //  if (Vector3.Angle(Agent.transform.forward, desired) < 80) // check if within visual field
         //OBSOLETE - now visual field is being calculated via FSM
         //   {
-        if (Vector3.Angle(Agent.transform.parent.transform.forward, desired) <= 120)
+        if (Vector3.Angle(Agent.transform.parent.transform.forward, desired) <= 135)
         //physically harder to look back over 135 degrees - so if going over, look away
         {
             headRot = 1;
