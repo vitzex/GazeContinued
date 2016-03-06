@@ -91,45 +91,42 @@ public class GazeFollowing : MonoBehaviour
 
         if (gazeFol)
         {
-            if (gameObject.GetComponentInParent<RandomCharacters>()._prevState == RandomCharacters.State.upwards)
+            if (headRot == -1)
+            //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, gameObject.transform.parent.transform.forward, stepRadians, 0);
             {
-                if (headRot == 1)
-                    //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
-                    gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(desired), 180);
-                //lookrotation - if coming downstream => looking the other way
-                //FIX -> via states
-                else if (headRot == -1)
-                //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, gameObject.transform.parent.transform.forward, stepRadians, 0);
-                {
-                    gameObject.transform.localRotation = gameObject.transform.parent.transform.localRotation;
-                    foreach (Transform child in gameObject.transform)
-                    {
-                        child.gameObject.SetActive(false);
-                    }
-                    //
-                    Quaternion.RotateTowards(gameObject.transform.localRotation, gameObject.transform.parent.transform.localRotation, 180);
-                }
-
-                }
-
-
-            else if (gameObject.GetComponentInParent<RandomCharacters>()._prevState == RandomCharacters.State.downwards)
-            {
-                if (headRot == 1)
-                    //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
-                    gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(-desired), 180);
-                //lookrotation - if coming downstream => looking the other way
-                //FIX -> via states
-                else if (headRot == -1)
-                    //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, gameObject.transform.parent.transform.forward, stepRadians, 0);
-       
-                         gameObject.transform.localRotation = gameObject.transform.parent.transform.localRotation;
+                gameObject.transform.localRotation = gameObject.transform.parent.transform.localRotation;
                 foreach (Transform child in gameObject.transform)
                 {
                     child.gameObject.SetActive(false);
                 }
-                //Quaternion.RotateTowards(gameObject.transform.localRotation, gameObject.transform.parent.transform.localRotation, 180);
             }
+
+            else if (gameObject.GetComponentInParent<RandomCharacters>()._state == RandomCharacters.State.upwards)
+            {
+                // if (headRot == 1)
+                //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
+                gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(desired), 180);
+                //lookrotation - if coming downstream => looking the other way
+                //FIX -> via states
+
+                //
+                // Quaternion.RotateTowards(gameObject.transform.localRotation, gameObject.transform.parent.transform.localRotation, 180);
+            }
+        
+
+
+
+
+        else if (gameObject.GetComponentInParent<RandomCharacters>()._state == RandomCharacters.State.downwards)
+        {
+            //        if (headRot == 1)
+            //gameObject.transform.forward = Vector3.RotateTowards(gameObject.transform.forward, desired, stepRadians, 0);
+            gameObject.transform.localRotation = Quaternion.RotateTowards(gameObject.transform.localRotation, Quaternion.LookRotation(-desired), 180);
+            //lookrotation - if coming downstream => looking the other way
+            //FIX -> via states
+
+            //Quaternion.RotateTowards(gameObject.transform.localRotation, gameObject.transform.parent.transform.localRotation, 180);
+        }
 
         }
 

@@ -25,7 +25,7 @@ public class RandomCharacters : MonoBehaviour
     public enum State { upwards, walk, downwards };
 
     bool check = false; //checking for state swithc
-    State _state = State.upwards;
+    public State _state = State.upwards;
    public State _prevState;
 
     #region Basic Getters/Setters
@@ -100,6 +100,7 @@ public class RandomCharacters : MonoBehaviour
             {
                 check = true;
                   StartCoroutine(DirectionState(avatar));
+              //  return;
    
 
                 // if (_prevState==State.downwards) SetState(State.upwards);
@@ -156,22 +157,26 @@ public class RandomCharacters : MonoBehaviour
                     avatar.speed = randomized;
                     //  gameObject.tag = "upwards";
 
-                    // Debug.Log("upwards");
+                    for (int k = 1; k <= 7; k++)
+                        if (Vector3.Distance(TargetPos, avatar.rootPosition) == 5 * k)
+                            TargetPos = TargetPosition + new Vector3(UnityEngine.Random.Range(-7, 7), 0, 0);
 
-                    SetDirState(State.walk);
+                    //periodic direction changes
+
+                    // Debug.Log("upwards");
+                    if (check == true)
+                    {
+                        check = false; SetDirState(State.downwards); yield break;     
+                    }
           break;
 
-        case State.walk:
-     if ( (check==true)&&(_prevState==State.downwards) ) {check = false; SetDirState(State.upwards); yield break; }
-    if ( (check==true)&&(_prevState==State.upwards) ) {check = false;  SetDirState(State.downwards); yield break; }
+                    //case State.walk:
+                    // if ( (check==true)&&(_prevState==State.downwards) ) {check = false; SetDirState(State.upwards); yield break; }
+                    //if ( (check==true)&&(_prevState==State.upwards) ) {check = false;  SetDirState(State.downwards); yield break; }
+                 
+                // break;
 
-    for (int k=1; k<=7; k++)
-     if ( Vector3.Distance(TargetPos, avatar.rootPosition) == 5*k)
-                        TargetPos = TargetPosition + new Vector3(UnityEngine.Random.Range(-7, 7), 0, 0);
-    //periodic direction changes
-                    break;
-
-      case State.downwards:
+                case State.downwards:
 
                     prevTarget = TargetPosition;
 
@@ -180,10 +185,17 @@ public class RandomCharacters : MonoBehaviour
                     randomized = UnityEngine.Random.Range(0.2f, 0.7f);
                     avatar.speed = randomized;
                     // gameObject.tag = "downwards";
+                    for (int k = 1; k <= 7; k++)
+                        if (Vector3.Distance(TargetPos, avatar.rootPosition) == 5 * k)
+                            TargetPos = TargetPosition + new Vector3(UnityEngine.Random.Range(-7, 7), 0, 0);
 
+                    //periodic direction changes
                     //   Debug.Log("downwards");
-
-                    SetDirState(State.walk);
+                    if (check == true)
+                    {
+                        check = false; SetDirState(State.upwards); yield break;
+                    }
+                   
       break;
      }
       }
