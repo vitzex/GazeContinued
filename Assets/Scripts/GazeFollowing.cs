@@ -50,7 +50,7 @@ public class GazeFollowing : MonoBehaviour
 
         SetState(State.Stroll);
 
-       // Agent = gameObject; //the object being called
+        // Agent = gameObject; //the object being called
 
         //    stepRadians = 0.1f* Mathf.PI / 180; //defined upstairs
 
@@ -58,9 +58,9 @@ public class GazeFollowing : MonoBehaviour
         //   maxSpeed = defaultSpd;
         //    maxSpeed = Mathf.Pow(0.02f,2)*Time.deltaTime;
 
-        Gaze = GameObject.FindGameObjectWithTag("Gaze");
+        Gaze = GameObject.Find("Stimulus");
 
-        Gaze.transform.parent.tag = "Gazing";
+        GameObject.FindGameObjectWithTag("Gaze").transform.parent.tag = "Gazing";
 
         // transferThreshold = 7;
 
