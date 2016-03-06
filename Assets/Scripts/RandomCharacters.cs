@@ -155,6 +155,8 @@ public class RandomCharacters : MonoBehaviour
                     TargetPos = TargetPosition + new Vector3(UnityEngine.Random.Range(-7, 7), 0, 0);
                     randomized = UnityEngine.Random.Range(0.2f, 0.7f);
                     avatar.speed = randomized;
+
+                    if (check == false) yield break;
                     //  gameObject.tag = "upwards";
 
                     for (int k = 1; k <= 7; k++)
@@ -166,7 +168,7 @@ public class RandomCharacters : MonoBehaviour
                     // Debug.Log("upwards");
                     if (check == true)
                     {
-                        check = false; SetDirState(State.downwards); yield break;     
+                        check = false; SetDirState(State.downwards); //yield break;     
                     }
           break;
 
@@ -184,6 +186,8 @@ public class RandomCharacters : MonoBehaviour
                     TargetPos = TargetPosition + new Vector3(UnityEngine.Random.Range(-7, 7), 0, 0);
                     randomized = UnityEngine.Random.Range(0.2f, 0.7f);
                     avatar.speed = randomized;
+
+                    if (check == false) yield break;
                     // gameObject.tag = "downwards";
                     for (int k = 1; k <= 7; k++)
                         if (Vector3.Distance(TargetPos, avatar.rootPosition) == 5 * k)
@@ -193,7 +197,7 @@ public class RandomCharacters : MonoBehaviour
                     //   Debug.Log("downwards");
                     if (check == true)
                     {
-                        check = false; SetDirState(State.upwards); yield break;
+                        check = false; SetDirState(State.upwards); //yield break;
                     }
                    
       break;
