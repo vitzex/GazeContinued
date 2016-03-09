@@ -11,6 +11,7 @@ public class GazeFollowing : MonoBehaviour
     int visible = 0, prev_visible = 0, headRot = 0;
     public float stepRadians = 0.1f * Mathf.PI / 180;
     Quaternion defaultRot;
+    GameObject[] gazingAgents;
     // int counter;
 
     public float m = 0.66f, k = 1.38f, t = 7.0f, transferThreshold = 7;
@@ -45,6 +46,7 @@ public class GazeFollowing : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        gazingAgents = GameObject.FindGameObjectsWithTag("Gazing");
 
         defaultRot = gameObject.transform.localRotation;
 
@@ -363,7 +365,7 @@ public class GazeFollowing : MonoBehaviour
     Vector3 scanFrontalArea(GameObject Agent)
     {
         int counter = 0, incoming = 0, sameDir = 0; // upcount = 0;
-        foreach (GameObject Gazing in GameObject.FindGameObjectsWithTag("Gazing")) //scanning for gazers
+        foreach (GameObject Gazing in gazingAgents) //scanning for gazers
         {
             if (Vector3.Distance(Agent.transform.position, Gazing.transform.position) <= transferThreshold) //if any gazer within range
                 if (Vector3.Angle(Agent.transform.forward, Gazing.transform.position - Agent.transform.position) <= 80) //within visual area
